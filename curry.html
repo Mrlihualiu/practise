@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body></body>
+  <script>
+    function add () {
+      console.log(arguments)
+      const _args = [...arguments]
+      function fn () {
+        _args.push(...arguments)
+        return fn
+      }
+
+      fn.toString = function () {
+        return _args.reduce((sum, cur) => sum + cur)
+      }
+
+      return fn
+    }
+
+    console.log(add(1)())
+    console.log(add(1)(2)(3)())
+  </script>
+</html>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>扫雷</title>
+    <style>
+      .wrap {
+        width: 450px;
+        display: flex;
+        flex-wrap: wrap;
+      }
+      .box {
+        position: relative;
+        box-sizing: border-box;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #999;
+        background-color: #fff;
+        cursor: pointer;
+      }
+      .box-mask::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        box-sizing: border-box;
+        width: 50px;
+        height: 50px;
+        border: 1px solid #999;
+        background-color: #eee;
+      }
+      .red-flag::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        box-sizing: border-box;
+        width: 50px;
+        height: 50px;
+        border: 1px solid #999;
+        background-color: red;
+      }
+      .boom {
+        color: red;
+      }
+      .piece {
+        background-color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap"></div>
+  </body>
+  <script>
+    // 格子数量
+    const LATTICE_NUMBER = 9 * 9
+    // 雷的数量
+    const BOOM_NUMBER = 12
+    const boomArr = []
+    let gameOverTag = false
+
+    document.oncontextmenu = function (e) {
+      return false
+      //或者 e.preventDefault()
+    }
+
+    window.onload = function () {
+      // 随机生成炸弹
+      createBoom(BOOM_NUMBER, LATTICE_NUMBER)
+
+      for (let i = 0; i < LATTICE_NUMBER; i++) {
+        createLattice(i)
+      }
+
+      // 给格子添加点击事件
+      addBoxClickEvent()
+    }
+    // 生成格子
+    function createLattice (i) {
+      const isBooms = isBoom(i)
+      const wrapDom = document.querySelector('.wrap')
+      let latticeDom = document.createElement('div')
+
+      latticeDom.className = (isBooms ? 'boom' : '') + ' box box-mask'
+      const boomNum = calcBoxAroundBoom(i)
+      latticeDom.innerText = isBooms ? 'boom' : boomNum === 0 ? '' : boomNum
+
+      wrapDom.appendChild(latticeDom)
+    }
+    // 给格子添加点击事件
+    function addBoxClickEvent () {
+      const boxDoms = document.getElementsByClassName('box')
+      for (let i = 0; i < boxDoms.length; i++) {
+        boxDoms[i].addEventListener('click', e => {
+          if (
+            e.target.className.indexOf('box-mask') === -1 ||
+            e.target.className.indexOf('red-flag') !== -1 ||
+            gameOverTag
+          ) {
+            return
+          }
+          const text = e.target.innerText
+
+          if (text === 'boom') {
+            e.target.className = 'box boom'
+            gameOver()
+          } else {
+            e.target.className = 'box'
+          }
+
+          checkVictory()
+        })
+
+        boxDoms[i].oncontextmenu = function (e) {
+          if (e.target.className.indexOf('box-mask') === -1 || gameOverTag) {
+            return
+          }
+
+          if (e.target.className.indexOf('red-flag') === -1) {
+            e.target.className = e.target.className + ' red-flag'
+          } else {
+            e.target.className = e.target.className.replace(' red-flag', '')
+          }
+          return false
+        }
+      }
+    }
+    // 随机生成 雷
+    function createBoom (num, max) {
+      let boom = Math.ceil(Math.random() * max)
+      if (!boomArr.includes(boom)) {
+        boomArr.push(boom)
+      }
+      while (boomArr.length < num) {
+        createBoom(num, max)
+      }
+    }
+    // 计算当前格子周围有几个雷
+    function calcBoxAroundBoom (num) {
+      let boomNumber = 0
+      const aroundArr = checkAroundArr(num)
+
+      for (let i = 0; i < aroundArr.length; i++) {
+        if (isBoom(aroundArr[i])) {
+          boomNumber++
+        }
+      }
+
+      return boomNumber
+    }
+    // 是否是炸弹
+    function isBoom (num) {
+      return boomArr.includes(num)
+    }
+    // 检查是否越界
+    function checkAroundArr (num) {
+      const LEN = parseFloat(Math.sqrt(LATTICE_NUMBER))
+      // 周围格子坐标
+      const left = num - 1
+      const left_top = num - LEN - 1
+      const top = num - LEN
+      const right_top = num - LEN + 1
+      const right = num + 1
+      const right_bottom = num + LEN + 1
+      const bottom = num + LEN
+      const left_bottom = num + LEN - 1
+
+      // 四个角
+      if (num === 0) {
+        return [right, right_bottom, bottom]
+      }
+      if (num === LEN - 1) {
+        return [left, left_bottom, bottom]
+      }
+      if (num === LATTICE_NUMBER - LEN) {
+        return [right, right_top, top]
+      }
+      if (num === LATTICE_NUMBER - 1) {
+        return [left, left_top, top]
+      }
+      // 第一行
+      if (num < LEN) {
+        return [left, left_bottom, bottom, right_bottom, right]
+      }
+      // 最后一行
+      if (num > LATTICE_NUMBER - LEN - 1) {
+        return [left, left_top, top, right_top, right]
+      }
+      // 第一列, 没有左边三个格子
+      if (num % LEN === 0) {
+        return [top, right_top, right, right_bottom, bottom]
+      }
+      // 最后一列, 没有右边三个格子
+      if ((num + 1) % LEN === 0) {
+        return [top, left_top, left, left_bottom, bottom]
+      }
+
+      return [
+        left,
+        left_top,
+        top,
+        right_top,
+        right,
+        right_bottom,
+        bottom,
+        left_bottom
+      ]
+    }
+    // 游戏结束
+    function gameOver () {
+      gameOverTag = true
+      clearAllMask()
+      alert('Game Over')
+    }
+    // 检查游戏是否胜利
+    function checkVictory () {
+      const boxDoms = document.getElementsByClassName('box-mask')
+      if (boxDoms.length <= BOOM_NUMBER) {
+        showBoom()
+        alert('Victory !')
+      }
+    }
+    // 胜利过后把炸弹显示出来
+    function showBoom () {
+      const boomDoms = document.getElementsByClassName('boom')
+      for (let i = 0; i < boomDoms.length; i++) {
+        boomDoms[i].target.className = 'box boom'
+      }
+    }
+    // 清除所有格子遮罩
+    function clearAllMask () {
+      const boxDoms = document.getElementsByClassName('box-mask')
+      for (let i = 0; i < boxDoms.length; i++) {
+        console.log('begin', boxDoms[i].className)
+        boxDoms[i].className = boxDoms[i].className
+          .replace('box-mask', '')
+          .replace(' red-flag', '')
+
+        console.log('end', boxDoms[i].className)
+      }
+    }
+  </script>
+</html>

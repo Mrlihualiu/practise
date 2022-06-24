@@ -1,0 +1,78 @@
+<style>
+  .wrap {
+    display: flex;
+  }
+  .nav {
+    width: 120px;
+    height: 100vh;
+    background-color: black;
+  }
+  .content {
+    flex: 1;
+  }
+  .block {
+    display: flex;
+    flex-wrap: wrap;
+    color: #fff;
+  }
+  .item {
+    margin: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .item1 {
+    width: 200px;
+    height: 50px;
+    background-color: blue;
+  }
+  .item2 {
+    width: 300px;
+    height: 50px;
+    background-color: red;
+  }
+  .item3 {
+    width: 120px;
+    height: 50px;
+    background-color: green;
+  }
+</style>
+
+<div class="wrap" id="app">
+  <div class="nav"></div>
+  <div class="content">
+    <div class="block block-1">
+      <template v-for="(item, index) of block1">
+        <div class="item item1" :key="'item-1-'+index">
+          {{`item1-${index + 1}`}}
+        </div>
+      </template>
+    </div>
+    <div class="block block-2">
+      <template v-for="(item, index) of block2">
+        <div class="item item2" :key="'item-2-'+index">
+          {{`item2-${index + 1}`}}
+        </div>
+      </template>
+    </div>
+    <div class="block block-3">
+      <template v-for="(item, index) of block3">
+        <div class="item item3" :key="'item-3-'+index">
+          {{`item3-${index + 1}`}}
+        </div>
+      </template>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script>
+  const app = new Vue({
+    el: '#app',
+    data: {
+      block1: new Array(10).fill(1),
+      block2: new Array(9).fill(1),
+      block3: new Array(7).fill(1)
+    }
+  })
+</script>

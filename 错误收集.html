@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>错误收集</title>
+  </head>
+  <body></body>
+  <script>
+    class StatistickSDK {
+      constructor (productID) {
+        this.productID = productID
+        // 初始化错误监控
+        this.initError()
+      }
+
+      // 数据发送
+      send (baseURL, query = {}) {
+        query.productID = this.productID
+        let queryStr = Object.entries(query)
+          .map(([key, value]) => `${key}=${value}`)
+          .join('&')
+        let img = new Image()
+        img.src = `${baseURL}?${queryStr}`
+      }
+
+      // 自定义错误上报
+      error (err, etraInfo) {
+        const errorURL = 'http://error/'
+      }
+      // 性能上报
+    }
+  </script>
+</html>

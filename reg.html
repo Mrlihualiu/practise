@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="item">
+      <label>正则</label>
+      <input type="text" id="reg" />
+    </div>
+    <div class="item">
+      <label>电话</label>
+      <input type="text" id="phone" />
+      <p id="msg"></p>
+    </div>
+    <button id="check">检查</button>
+    <script>
+      // const reg = /^((([0-9]{3}-)?[0-9]{8})|(([0-9]{4}-)?[0-9]{7}))(-[0-9]{1,4})?$/
+      function getReg () {
+        let initReg = /^(0[0-9]{2,3}\-)([2-9][0-9]{6,7})+(\-[0-9]{1,4})?$/
+        const inputReg = document.getElementById('reg').value
+        if (inputReg) {
+          initReg = inputReg
+        } else {
+          document.getElementById('reg').value = initReg
+        }
+
+        return initReg
+      }
+      getReg()
+      document.getElementById('check').onclick = function () {
+        const phone = document.getElementById('phone').value
+        const domText = document.getElementById('msg')
+        let initReg = new RegExp(getReg())
+        console.log(phone)
+        if (initReg.test(phone)) {
+          domText.innerHTML = `${phone} 格式正确`
+          domText.style.color = 'green'
+        } else {
+          domText.innerHTML = phone + ' 格式错误'
+          domText.style.color = 'red'
+        }
+      }
+    </script>
+    <style>
+      .item {
+        margin-bottom: 20px;
+      }
+      input {
+        width: 900px;
+        height: 40px;
+        font-size: 16px;
+        line-height: 40px;
+      }
+    </style>
+  </body>
+</html>

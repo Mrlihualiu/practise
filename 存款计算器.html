@@ -1,0 +1,12 @@
+<script>
+  let activeYear = 1
+  function addMonry (start = 0, addmoney = 30000, year = 25, interest = 0.05) {
+    start = start * (1 + interest) + addmoney
+    console.log(`第${activeYear}年, ${(start / 10000).toFixed(2)}w`)
+    activeYear++
+    while (year >= activeYear) {
+      addMonry(start, addmoney, year, interest)
+    }
+  }
+  addMonry(0, 30000, 19, 0.05)
+</script>

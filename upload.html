@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>upload</title>
+    <script>
+      window.onload = function () {
+        window.URL = window.URL || window.webkitURL
+        var fileElement = document.getElementById('uploadInput'),
+          fileSelect = document.getElementById('fileSelect'),
+          fileList = document.getElementById('fileList')
+        // 点击选择文件，触发input点击事件，实现文件上传
+        fileSelect.addEventListener(
+          'click',
+          e => {
+            if (fileElement) {
+              fileElement.click()
+            }
+            e.preventDefault()
+          },
+          false
+        )
+      }
+
+      function updateSize () {
+        let nBytes = 0,
+          oFiles = document.getElementById('uploadInput').files,
+          nFiles = oFiles.length
+        for (let nFiledId = 0; nFiledId < nFiles; nFiledId++) {
+          nBytes += oFiles[nFiledId].size
+        }
+        let sOutput = `${nBytes}bytes`
+        var aMultiples = [
+          'KiB',
+          'MiB',
+          'GiB',
+          'TiB',
+          'PiB',
+          'EiB',
+          'ZiB',
+          'YiB'
+        ]
+        for (
+          nMultiple = 0, nApprox = nBytes / 1024;
+          nApprox > 1;
+          nApprox /= 1024, nMultiple++
+        ) {
+          sOutput = `${nApprox.toFixed(3)} ${
+            aMultiples[nMultiple]
+          } (${nBytes} bytes)`
+        }
+
+        document.getElementById('fileNum').innerHTML = nFiles
+        document.getElementById('fileSize').innerHTML = sOutput
+      }
+      function handleSelectFile (files) {
+        console.log(files)
+        if (!files.length) {
+          fileList.innerHTML = '<p>no file upload</p>'
+        } else {
+          updateSize()
+          fileList.innerHTML = ''
+          var list = document.createElement('ul')
+          fileList.appendChild(list)
+          for (let i = 0, len = files.length; i < len; i++) {
+            var li = document.createElement('li')
+            list.appendChild(li)
+            var img = document.createElement('img')
+            img.src = window.URL.createObjectURL(files[i])
+            img.height = 60
+            img.onload = function () {
+              window.URL.revokeObjectURL(this.src)
+            }
+            li.appendChild(img)
+            var info = document.createElement('span')
+            info.innerHTML = `${files[i].name}: ${files[i].size} bytes`
+            li.appendChild(info)
+          }
+        }
+      }
+      function cloneData (data) {
+        var dataToString = Object.prototype.toString.call(data).toLowerCase()
+        copyData = ''
+        switch (dataToString) {
+          case '[object null]':
+            copyData = null
+            break
+          case '[object undefinde]':
+            copyData = undefined
+            break
+          case '[object object]':
+            var keys = Object.keys(data)
+            copyData = {}
+            for (let i = 0, len = keys.length; i < len; i++) {
+              if (data.hasOwnProperty(keys[i])) {
+                newObject[keys[i]] = data[keys[i]]
+              }
+            }
+            break
+          case '[object array]':
+            copyData = data
+            break
+          case '[object number]':
+            copyData = Number(data)
+            break
+          case '[object string]':
+            copyData = '' + data
+            break
+          default:
+            copyData = data
+        }
+
+        return copyData
+      }
+    </script>
+  </head>
+  <body>
+    <form name="uploadForm">
+      <div>
+        <input
+          id="uploadInput"
+          type="file"
+          name="myFiles"
+          style="display: none;"
+          onchange="handleSelectFile(this.files);"
+          multiple
+        />
+        <a href="#" id="fileSelect">Select some files</a>
+        数量<span id="fileNum">0</span> 大小<span id="fileSize">0</span>
+      </div>
+      <div id="fileList">
+        <p>no file upload</p>
+      </div>
+      <div>
+        <input type="submit" value="send file" />
+      </div>
+    </form>
+  </body>
+</html>
