@@ -1,0 +1,15 @@
+<script>
+  function instanceOf (father, child) {
+    const fp = father.prototype
+    let cp = child._proto_
+
+    while (cp) {
+      if (cp === fp) {
+        return true
+      }
+      cp = cp._proto_
+    }
+
+    return false
+  }
+</script>

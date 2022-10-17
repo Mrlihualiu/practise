@@ -1,0 +1,14 @@
+<script>
+  function clone () {
+    if (typeof target === Object) {
+      let cloneTarget = Array.isArray(target) ? [] : {}
+      for (key in target) {
+        cloneTarget[key] = clone(target[key])
+      }
+
+      return cloneTarget
+    } else {
+      return target
+    }
+  }
+</script>

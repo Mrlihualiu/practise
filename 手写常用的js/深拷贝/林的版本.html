@@ -1,0 +1,20 @@
+<script>
+  function deepClone (target, map = new WeakMap()) {
+    if (target === null) return target
+    if (target instanceof Date) return new Date(target)
+    if (target instanceof RegExp) return new RegExp(target)
+    if (target instanceof HTMLElement) return target
+
+    if (typeof target !== 'object') return target
+
+    if (map.get(target)) return map.get(target)
+    const cloneTarget = new target.constructor()
+    map.set(target, cloneTarget)
+
+    Reflect.ownKeys(target).forEach(key => {
+      cloneTarget[key] = deepClone(target[key])
+    })
+
+    return cloneTarget
+  }
+</script>

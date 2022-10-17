@@ -1,0 +1,14 @@
+<script>
+  function throttle (fn, delay = 1000) {
+    let flag = true
+    return function () {
+      if (!flag) return
+      flag = false
+      const args = arguments
+      fn.apply(this, args)
+      setTimeout(() => {
+        flag = true
+      }, delay)
+    }
+  }
+</script>
